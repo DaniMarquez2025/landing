@@ -2257,7 +2257,7 @@
             <div class="contact-info-icon">📧</div>
             <div class="contact-info-text">
               <strong>Email</strong>
-              <span>landingexpressforyou@gmail.com</span>
+              <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="acc0cdc2c8c5c2cbc9d4dcdec9dfdfcac3ded5c3d9eccbc1cdc5c082cfc3c1">[email&#160;protected]</a></span>
             </div>
           </div>
           <div class="contact-info-item">
@@ -2277,27 +2277,30 @@
         </div>
       </div>
       <div class="contact-form reveal visible" style="transition-delay:0.2s">
+        <form id="contactForm" action="https://formspree.io/f/mgopbzgz" method="POST">
+        <input type="text" name="_gotcha" style="display:none">
+        <input type="hidden" name="_subject" value="Nuevo contacto desde Landing Express">
         <div class="form-row">
           <div class="form-group">
             <label>Nombre</label>
-            <input type="text" placeholder="Tu nombre" id="fname">
+            <input type="text" name="nombre" placeholder="Tu nombre" id="fname" required>
           </div>
           <div class="form-group">
             <label>Apellidos</label>
-            <input type="text" placeholder="Tus apellidos" id="lname">
+            <input type="text" name="apellidos" placeholder="Tus apellidos" id="lname" required>
           </div>
         </div>
         <div class="form-group">
           <label>Email</label>
-          <input type="email" placeholder="tu@email.com" id="femail">
+          <input type="email" name="email" placeholder="tu@email.com" id="femail" required>
         </div>
         <div class="form-group">
           <label>Teléfono</label>
-          <input type="tel" placeholder="+34 600 000 000" id="fphone">
+          <input type="tel" name="telefono" placeholder="+34 600 000 000" id="fphone">
         </div>
         <div class="form-group">
           <label>Tipo de proyecto</label>
-          <select id="ftype">
+          <select name="tipo_proyecto" id="ftype" required>
             <option value="">Selecciona una opción</option>
             <option>Landing Page Express</option>
             <option>Web Corporativa</option>
@@ -2308,10 +2311,11 @@
         </div>
         <div class="form-group">
           <label>Cuéntanos tu proyecto</label>
-          <textarea placeholder="Describe brevemente tu negocio y qué necesitas..." id="fmsg"></textarea>
+          <textarea name="mensaje" placeholder="Describe brevemente tu negocio y qué necesitas..." id="fmsg" required></textarea>
         </div>
-        <button class="form-submit" onclick="submitForm()" disabled="" style="opacity: 0.7;">✓ Enviado</button>
-        <div class="form-success" id="formSuccess" style="display: block;">✓ Mensaje enviado · Te respondemos en menos de 24h</div>
+        <button type="submit" class="form-submit" id="submitBtn">Enviar mensaje</button>
+        <div class="form-success" id="formSuccess" style="display:none;">✓ Mensaje enviado · Te respondemos en menos de 24h</div>
+      </form>
       </div>
     </div>
   </div>
@@ -2365,7 +2369,7 @@
   <span>Escríbenos</span>
 </a>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // Custom cursor
   const cursor = document.getElementById('cursor');
   const cursorRing = document.getElementById('cursorRing');
@@ -2461,18 +2465,37 @@
   }, { threshold: 0.5 });
   document.querySelectorAll('.stat-item').forEach(el => statItemObs.observe(el));
 
-  // Form submit
-  function submitForm() {
-    const name = document.getElementById('fname').value;
-    const email = document.getElementById('femail').value;
-    if (!name || !email) {
-      alert('Por favor, completa al menos tu nombre y email.');
-      return;
-    }
-    document.getElementById('formSuccess').style.display = 'block';
-    document.querySelector('.form-submit').textContent = '✓ Enviado';
-    document.querySelector('.form-submit').style.opacity = '0.7';
-    document.querySelector('.form-submit').disabled = true;
+  // Form submit con Formspree
+  const contactForm = document.getElementById('contactForm');
+  if (contactForm) {
+    contactForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const success = document.getElementById('formSuccess');
+      btn.textContent = 'Enviando...';
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+      try {
+        const res = await fetch(contactForm.action, {
+          method: 'POST',
+          body: new FormData(contactForm),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (res.ok) {
+          contactForm.reset();
+          success.style.display = 'block';
+          btn.textContent = '✓ Enviado';
+        } else {
+          btn.textContent = 'Error, inténtalo de nuevo';
+          btn.disabled = false;
+          btn.style.opacity = '1';
+        }
+      } catch {
+        btn.textContent = 'Error, inténtalo de nuevo';
+        btn.disabled = false;
+        btn.style.opacity = '1';
+      }
+    });
   }
 
   // Smooth scroll for nav links
@@ -2492,16 +2515,4 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  const form = document.querySelector("form");
-  const btn = document.getElementById("btnEnviar");
-
-  if(form && btn){
-    form.addEventListener("submit", function() {
-      btn.innerText = "ENVIADO";
-      btn.disabled = true;
-    });
-  }
-});
-</script>
-
-</body></html>
+  const form = document.quer
